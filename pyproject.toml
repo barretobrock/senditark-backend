@@ -21,8 +21,9 @@ pukr = { git = "https://github.com/barretobrock/pukr.git", branch = "main" }
 gunicorn = "^21"
 loguru = "^0"
 Flask = "^3"
-Flask-SQLAlchemy = "^2"
+Flask-SQLAlchemy = "^3"
 pandas = "^2"
+psycopg2 = "^2.9"
 requests = "^2"
 sqlalchemy = "^2"
 # Optional dependencies would go down here

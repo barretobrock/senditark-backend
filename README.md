@@ -33,3 +33,7 @@ A Flack API backend for senditark.
    ```postgresql
    GRANT ALL PRIVILEGES ON DATABASE <db> TO <user>;
    ```
+ - Make user owner of new db
+   ```postgresql
+   ALTER DATABASE <db> OWNER TO <user>;
+   ```
