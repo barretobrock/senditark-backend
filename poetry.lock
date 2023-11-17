@@ -324,25 +324,6 @@ Flask = ">=0.10"
 SQLAlchemy = ">=0.8.0"
 
 [[package]]
-name = "flask-wtf"
-version = "1.2.1"
-description = "Form rendering, validation, and CSRF protection for Flask with WTForms."
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "flask_wtf-1.2.1-py3-none-any.whl", hash = "sha256:fa6793f2fb7e812e0fe9743b282118e581fb1b6c45d414b8af05e659bd653287"},
-    {file = "flask_wtf-1.2.1.tar.gz", hash = "sha256:8bb269eb9bb46b87e7c8233d7e7debdf1f8b74bf90cc1789988c29b37a97b695"},
-]
-
-[package.dependencies]
-flask = "*"
-itsdangerous = "*"
-wtforms = "*"
-
-[package.extras]
-email = ["email-validator"]
-
-[[package]]
 name = "greenlet"
 version = "3.0.1"
 description = "Lightweight in-process concurrent programming"
@@ -411,6 +392,26 @@ files = [
 [package.extras]
 docs = ["Sphinx"]
 test = ["objgraph", "psutil"]
+
+[[package]]
+name = "gunicorn"
+version = "21.2.0"
+description = "WSGI HTTP Server for UNIX"
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "gunicorn-21.2.0-py3-none-any.whl", hash = "sha256:3213aa5e8c24949e792bcacfc176fef362e7aac80b76c56f6b5122bf350722f0"},
+    {file = "gunicorn-21.2.0.tar.gz", hash = "sha256:88ec8bff1d634f98e61b9f65bc4bf3cd918a90806c6f5c48bc5603849ec81033"},
+]
+
+[package.dependencies]
+packaging = "*"
+
+[package.extras]
+eventlet = ["eventlet (>=0.24.1)"]
+gevent = ["gevent (>=1.4.0)"]
+setproctitle = ["setproctitle"]
+tornado = ["tornado (>=0.2)"]
 
 [[package]]
 name = "identify"
@@ -758,6 +759,27 @@ identify = ">=1.0.0"
 nodeenv = ">=0.11.1"
 pyyaml = ">=5.1"
 virtualenv = ">=20.10.0"
+
+[[package]]
+name = "pukr"
+version = "0.1.1"
+description = "A place to store personal log config files (short for puukuur - woodshed)"
+optional = false
+python-versions = "^3.10"
+files = []
+develop = false
+
+[package.dependencies]
+loguru = "~0"
+
+[package.extras]
+test = []
+
+[package.source]
+type = "git"
+url = "https://github.com/barretobrock/pukr.git"
+reference = "main"
+resolved_reference = "21d18f7f49383f9cfe38f290c7e13cb774c0736b"
 
 [[package]]
 name = "pycodestyle"
@@ -1171,27 +1193,10 @@ files = [
 [package.extras]
 dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 
-[[package]]
-name = "wtforms"
-version = "3.1.1"
-description = "Form validation and rendering for Python web development."
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "wtforms-3.1.1-py3-none-any.whl", hash = "sha256:ae7c54b29806c70f7bce8eb9f24afceb10ca5c32af3d9f04f74d2f66ccc5c7e0"},
-    {file = "wtforms-3.1.1.tar.gz", hash = "sha256:5e51df8af9a60f6beead75efa10975e97768825a82146a65c7cbf5b915990620"},
-]
-
-[package.dependencies]
-markupsafe = "*"
-
-[package.extras]
-email = ["email-validator"]
-
 [extras]
 test = []
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "8d8ddb1608d27d02db3d0b913a374236b505cd4042f851983c2201934394a45a"
+content-hash = "fd51c901f4e20016b35bfa7ecc08ad362257fa1b864ccce4ce6d4ed43537f471"
