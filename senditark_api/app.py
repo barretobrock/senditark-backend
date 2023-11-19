@@ -3,6 +3,7 @@ from flask import (
     jsonify,
     request,
 )
+from flask_cors import CORS
 from pukr import (
     InterceptHandler,
     get_logger,
@@ -13,12 +14,20 @@ from werkzeug.http import HTTP_STATUS_CODES
 from senditark_api.config import DevelopmentConfig
 from senditark_api.flask_base import db
 from senditark_api.routes.account import bp_acct
-from senditark_api.routes.helpers import get_app_logger
+from senditark_api.routes.cron import bp_cron
+from senditark_api.routes.helpers import (
+    get_app_logger,
+    log_after,
+    log_before,
+)
 from senditark_api.routes.invoices import bp_invc
+from senditark_api.routes.main import bp_main
 
 ROUTES = [
     bp_acct,
-    bp_invc
+    bp_cron,
+    bp_invc,
+    bp_main
 ]
 
 
@@ -43,6 +52,7 @@ def create_app(*args, **kwargs) -> Flask:
     config_class.build_db_engine()
 
     app = Flask(__name__, static_url_path='/')
+    CORS(app)
     app.config.from_object(config_class)
 
     # Initialize database ops
@@ -69,5 +79,8 @@ def create_app(*args, **kwargs) -> Flask:
                 logger.debug(f'Bypassed exception registration on code {err_code} ({name}). Reason: {e}')
 
     app.config['db'] = db
+
+    app.before_request(log_before)
+    app.after_request(log_after)
 
     return app
