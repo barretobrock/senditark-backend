@@ -55,6 +55,7 @@ class TableAccount(Base):
 
     def get_parent_names(self) -> List[str]:
         parent_list = deque()
+        parent: TableAccount
         parent = self.parent_account
         while parent is not None:
             # So, we're going backwards up the hierarchy.
@@ -69,10 +70,10 @@ class TableAccount(Base):
 
     @hybrid_property
     def full_name(self):
-        parents_str = '.'.join(self.get_parent_names())
-        if parents_str == '':
-            return f'{self.account_type.name}.{self.name}'.upper()
-        return f'{self.account_type.name}.{parents_str}.{self.name}'.upper()
+        if self.parent_account_key is not None:
+            parents_str = '.'.join(self.get_parent_names())
+            return f'{self.account_type.name}.{parents_str}.{self.name}'.upper()
+        return f'{self.account_type.name}.{self.name}'.upper()
 
     def __repr__(self) -> str:
         return f'<TableAccount(name={self.name}, level({self.level}), is_hidden={self.is_hidden})>'
