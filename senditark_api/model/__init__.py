@@ -12,10 +12,15 @@ from .invoice import (
     TableInvoice,
     TableInvoiceSplit,
 )
+from .payee import TablePayee
 from .scheduled_transaction import (
     ScheduleFrequency,
     TableScheduledTransaction,
     TableScheduledTransactionSplit,
+)
+from .tag import (
+    TableTag,
+    TableTagToTransactionSplit,
 )
 from .transaction import (
     ReconciledState,

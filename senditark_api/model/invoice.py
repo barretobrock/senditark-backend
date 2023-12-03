@@ -44,9 +44,9 @@ class TableInvoice(Base):
 
     @hybrid_property
     def total(self) -> float:
-        if self.entries.count() == 0:
+        if self.splits.count() == 0:
             return 0
-        return sum([x.total for x in self.entries])
+        return sum([x.total for x in self.splits])
 
     @total.expression
     def total(cls):
@@ -61,7 +61,7 @@ class TableInvoice(Base):
 
 
 class TableInvoiceSplit(Base):
-    """Entries in invoices"""
+    """Splits in invoices"""
 
     invoice_split_id = Column(Integer, primary_key=True, autoincrement=True)
     invoice_key = Column(Integer, ForeignKey(TableInvoice.invoice_id), nullable=False)

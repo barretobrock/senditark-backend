@@ -8,6 +8,7 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
 )
+from sqlalchemy.orm import relationship
 
 from .account import TableAccount
 from .base import Base
@@ -18,6 +19,7 @@ class TableBudget(Base):
 
     budget_id = Column(Integer, primary_key=True, autoincrement=True)
     account_key = Column(Integer, ForeignKey(TableAccount.account_id), nullable=False)
+    account = relationship('TableAccount', back_populates='budgets')
     name = Column(VARCHAR, nullable=False)
     amount = Column(Float(2), nullable=False)
     year = Column(Integer, nullable=False)

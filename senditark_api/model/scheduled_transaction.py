@@ -3,7 +3,6 @@ import enum
 from sqlalchemy import (
     DATE,
     VARCHAR,
-    Boolean,
     Column,
     Enum,
     Float,
@@ -46,6 +45,9 @@ class TableScheduledTransaction(Base):
     create_n_days_before = Column(Integer, default=30, nullable=False)
     desc = Column(Text)
 
+    def __repr__(self) -> str:
+        return f'<TableScheduledTransaction(start_date={self.start_date} n_before={self.create_n_days_before})>'
+
 
 class TableScheduledTransactionSplit(Base):
     """Scheduled Transaction split table
@@ -57,9 +59,16 @@ class TableScheduledTransactionSplit(Base):
     scheduled_transaction_key = Column(Integer, ForeignKey(TableScheduledTransaction.scheduled_transaction_id),
                                        nullable=False)
     scheduled_transaction = relationship('TableScheduledTransaction', back_populates='split_templates')
-    account_key = Column(Integer, ForeignKey(TableAccount.account_id), nullable=False)
-    account = relationship('TableAccount', back_populates='scheduled_transaction_split_templates')
+    credit_account_key = Column(Integer, ForeignKey(TableAccount.account_id), nullable=False)
+    credit_account = relationship('TableAccount', backref='credit_scheduled_transaction_splits',
+                                  foreign_keys=[credit_account_key])
+    debit_account_key = Column(Integer, ForeignKey(TableAccount.account_id), nullable=False)
+    debit_account = relationship('TableAccount', backref='debit_scheduled_transaction_splits',
+                                 foreign_keys=[debit_account_key])
     amount = Column(Float, nullable=False)
-    is_credit = Column(Boolean)
-    tag = Column(VARCHAR)
     memo = Column(VARCHAR)
+    tags = relationship('TableTagToTransactionSplit', back_populates='scheduled_transactions')
+
+    def __repr__(self) -> str:
+        return (f'<TableScheduledTransactionSplit(amount={self.amount} credit={self.credit_account}, '
+                f'debit={self.debit_account})>')
