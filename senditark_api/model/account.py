@@ -43,7 +43,6 @@ class TableAccount(Base):
     last_reconciled = Column(Date)
     is_hidden = Column(Boolean, default=False, nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
-    scheduled_transaction_split_templates = relationship('TableScheduledTransactionSplit', back_populates='account')
     daily_balances = relationship('TableBalance', back_populates='account')
     budgets = relationship('TableBudget', back_populates='account')
 

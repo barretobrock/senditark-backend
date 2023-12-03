@@ -20,6 +20,7 @@ from .scheduled_transaction import (
 )
 from .tag import (
     TableTag,
+    TableTagToScheduledTransactionSplit,
     TableTagToTransactionSplit,
 )
 from .transaction import (

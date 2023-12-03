@@ -67,7 +67,7 @@ class TableScheduledTransactionSplit(Base):
                                  foreign_keys=[debit_account_key])
     amount = Column(Float, nullable=False)
     memo = Column(VARCHAR)
-    tags = relationship('TableTagToTransactionSplit', back_populates='scheduled_transactions')
+    tags = relationship('TableTagToScheduledTransactionSplit', back_populates='scheduled_transactions')
 
     def __repr__(self) -> str:
         return (f'<TableScheduledTransactionSplit(amount={self.amount} credit={self.credit_account}, '

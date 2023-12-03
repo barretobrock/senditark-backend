@@ -82,7 +82,7 @@ class TableTransactionSplit(Base):
 
     def __init__(self, amount: float, payee: TablePayee, credit_account: TableAccount, debit_account: TableAccount,
                  memo: str = None, reconciled_state: ReconciledState = ReconciledState.n,
-                 transaction: TableTransaction = None, tags: Optional[List[TableTagToTransactionSplit]] = None):
+                 transaction: TableTransaction = None, tags: Optional[List['TableTagToTransactionSplit']] = None):
         self.amount = amount
         self.credit_account = credit_account
         self.debit_account = debit_account

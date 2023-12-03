@@ -7,6 +7,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 
 from .base import Base
+from .scheduled_transaction import TableScheduledTransactionSplit
 from .transaction import TableTransactionSplit
 
 
@@ -16,7 +17,8 @@ class TableTag(Base):
     tag_id = Column(Integer, primary_key=True, autoincrement=True)
     tag_name = Column(VARCHAR, nullable=False, unique=True)
     tag_color = Column(VARCHAR, nullable=False, default='yellow')
-    tag_maps = relationship('TableTagToTransactionSplit', back_populates='tag')
+    transaction_tag_maps = relationship('TableTagToTransactionSplit', back_populates='tag')
+    scheduled_transaction_tag_maps = relationship('TableTagToScheduledTransactionSplit', back_populates='tag')
 
     def __init__(self, name: str, color: str = 'yellow'):
         self.tag_name = name
@@ -32,12 +34,28 @@ class TableTagToTransactionSplit(Base):
     tag_to_transaction_split_id = Column(Integer, primary_key=True, autoincrement=True)
     transaction_split_key = Column(Integer, ForeignKey(TableTransactionSplit.transaction_split_id), nullable=False)
     tag_key = Column(Integer, ForeignKey(TableTag.tag_id), nullable=False)
-    tag = relationship('TableTag', back_populates='tag_maps')
+    tag = relationship('TableTag', back_populates='transaction_tag_maps')
     transactions = relationship('TableTransactionSplit', back_populates='tags')
-    scheduled_transactions = relationship('TableScheduledTransactionSplit', back_populates='tags')
 
     def __init__(self, tag: TableTag):
         self.tag = tag
 
     def __repr__(self) -> str:
         return f'<TableTagToTransactionSplit(id={self.tag_to_transaction_split_id})>'
+
+
+class TableTagToScheduledTransactionSplit(Base):
+    """Tag-to-scheduled-transaction-split table"""
+
+    tag_to_scheduled_transaction_split_id = Column(Integer, primary_key=True, autoincrement=True)
+    transaction_split_key = Column(Integer, ForeignKey(TableScheduledTransactionSplit.scheduled_transaction_split_id),
+                                   nullable=False)
+    tag_key = Column(Integer, ForeignKey(TableTag.tag_id), nullable=False)
+    tag = relationship('TableTag', back_populates='scheduled_transaction_tag_maps')
+    scheduled_transactions = relationship('TableScheduledTransactionSplit', back_populates='tags')
+
+    def __init__(self, tag: TableTag):
+        self.tag = tag
+
+    def __repr__(self) -> str:
+        return f'<TableTagToScheduledTransactionSplit(id={self.tag_to_scheduled_transaction_split_id})>'
