@@ -21,7 +21,7 @@ from sqlalchemy.orm import relationship
 
 from .account import TableAccount
 from .base import Base
-from .invoice import TableInvoice
+from .invoice import TableInvoiceSplit
 from .payee import TablePayee
 
 if TYPE_CHECKING:
@@ -75,7 +75,8 @@ class TableTransactionSplit(Base):
     debit_account = relationship('TableAccount', backref='debit_transaction_splits',
                                  foreign_keys=[debit_account_key])
     reconciled_state = Column(Enum(ReconciledState), default=ReconciledState.n, nullable=False)
-    invoice_key = Column(Integer, ForeignKey(TableInvoice.invoice_id), nullable=True)
+    invoice_split_key = Column(Integer, ForeignKey(TableInvoiceSplit.invoice_split_id), nullable=True)
+    invoice_split = relationship('TableInvoiceSplit', back_populates='transaction_split')
     amount = Column(Float, nullable=False)
     memo = Column(VARCHAR)
     tags = relationship('TableTagToTransactionSplit', back_populates='transactions')

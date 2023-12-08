@@ -71,6 +71,7 @@ class TableInvoiceSplit(Base):
     quantity = Column(Float(2), default=1.0, nullable=False)
     unit_price = Column(Float(2), nullable=False)
     discount = Column(Float(2), nullable=False)
+    transaction_split = relationship('TableTransactionSplit', back_populates='invoice_split')
 
     @hybrid_property
     def total(self) -> float:
