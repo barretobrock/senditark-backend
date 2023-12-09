@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import datetime
 from typing import Union
 
@@ -14,6 +15,7 @@ from .account import TableAccount
 from .base import Base
 
 
+@dataclass
 class TableBalance(Base):
     """Balance table
 
@@ -23,11 +25,11 @@ class TableBalance(Base):
         e.g., Transaction for account 'I' of 2023-11-02, looks up for balance as of the most recent date before that.
     """
 
-    balance_id = Column(Integer, primary_key=True, autoincrement=True)
-    account_key = Column(Integer, ForeignKey(TableAccount.account_id), nullable=False)
+    balance_id: int = Column(Integer, primary_key=True, autoincrement=True)
+    account_key: int = Column(Integer, ForeignKey(TableAccount.account_id), nullable=False)
     account = relationship('TableAccount', back_populates='daily_balances')
-    date = Column(DATE, nullable=False)
-    amount = Column(Float(2), nullable=False)
+    date: datetime.date = Column(DATE, nullable=False)
+    amount: float = Column(Float(2), nullable=False)
 
     def __init__(self, date: Union[str, date, datetime], amount: float, account: TableAccount = None):
         if not isinstance(date, datetime.date):

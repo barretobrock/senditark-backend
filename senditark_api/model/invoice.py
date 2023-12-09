@@ -1,10 +1,12 @@
-from datetime import datetime
+from dataclasses import dataclass
+import datetime
+from typing import List
 
 from sqlalchemy import (
-    TIMESTAMP,
     VARCHAR,
     Boolean,
     Column,
+    Date,
     Float,
     ForeignKey,
     Integer,
@@ -20,27 +22,31 @@ from sqlalchemy.sql import (
 from .base import Base
 
 
+@dataclass
 class TableInvoice(Base):
     """Invoices table"""
 
-    invoice_id = Column(Integer, primary_key=True, autoincrement=True)
-    splits = relationship('TableInvoiceSplit', back_populates='invoice', lazy='dynamic')
-    created_date = Column(TIMESTAMP, nullable=False)
-    is_posted = Column(Boolean, default=False, nullable=False)
-    posted_date = Column(TIMESTAMP)
-    is_paid = Column(Boolean, default=False, nullable=False)
-    paid_date = Column(TIMESTAMP)
-    notes = Column(Text)
+    invoice_id: int = Column(Integer, primary_key=True, autoincrement=True)
+    created_date: datetime.date = Column(Date, nullable=False)
+    is_posted: bool = Column(Boolean, default=False, nullable=False)
+    posted_date: datetime.date = Column(Date)
+    is_paid: bool = Column(Boolean, default=False, nullable=False)
+    paid_date: datetime.date = Column(Date)
+    notes: str = Column(Text)
+    splits = relationship('TableInvoiceSplit', back_populates='invoice')
 
-    def __init__(self, created_date: datetime,
-                 posted_date: datetime = None, is_paid: bool = False, pmt_date: datetime = None,
-                 notes: str = None):
+    def __init__(self, created_date: datetime.date, posted_date: datetime.date = None, paid_date: datetime.date = None,
+                 notes: str = None, splits: List['TableInvoiceSplit'] = None):
         self.created_date = created_date
-        self.is_posted = posted_date is not None and posted_date.date() > datetime(2000, 1, 1).date()
+        if posted_date is not None:
+            self.is_posted = True
         self.posted_date = posted_date
-        self.is_paid = is_paid
-        self.paid_date = pmt_date
+        if paid_date is not None:
+            self.is_paid = True
+        self.paid_date = paid_date
         self.notes = notes
+        if splits is not None:
+            self.splits = splits
 
     @hybrid_property
     def total(self) -> float:
@@ -63,14 +69,14 @@ class TableInvoice(Base):
 class TableInvoiceSplit(Base):
     """Splits in invoices"""
 
-    invoice_split_id = Column(Integer, primary_key=True, autoincrement=True)
-    invoice_key = Column(Integer, ForeignKey(TableInvoice.invoice_id), nullable=False)
+    invoice_split_id: int = Column(Integer, primary_key=True, autoincrement=True)
+    invoice_key: int = Column(Integer, ForeignKey(TableInvoice.invoice_id), nullable=False)
     invoice = relationship('TableInvoice', back_populates='splits')
-    transaction_date = Column(TIMESTAMP, nullable=False)
-    description = Column(VARCHAR, nullable=False)
-    quantity = Column(Float(2), default=1.0, nullable=False)
-    unit_price = Column(Float(2), nullable=False)
-    discount = Column(Float(2), nullable=False)
+    transaction_date: datetime.date = Column(Date, nullable=False)
+    description: str = Column(VARCHAR, nullable=False)
+    quantity: float = Column(Float(2), default=1.0, nullable=False)
+    unit_price: float = Column(Float(2), nullable=False)
+    discount: float = Column(Float(2), nullable=False)
     transaction_split = relationship('TableTransactionSplit', back_populates='invoice_split')
 
     @hybrid_property
@@ -81,7 +87,7 @@ class TableInvoiceSplit(Base):
     def total(cls) -> float:
         return cls.quantity * cls.unit_price * (1 - cls.discount)
 
-    def __init__(self, transaction_date: datetime, description: str, quantity: float, unit_price: float,
+    def __init__(self, transaction_date: datetime.date, description: str, quantity: float, unit_price: float,
                  discount: float):
         self.transaction_date = transaction_date
         self.description = description
@@ -90,5 +96,5 @@ class TableInvoiceSplit(Base):
         self.discount = discount
 
     def __repr__(self) -> str:
-        return f'<TableInvoiceSplit(date={self.transaction_date} desc={self.description[:20]} ' \
+        return f'<TableInvoiceSplit(date={self.transaction_date} desc={self.description} ' \
                f'amt={self.total} discount={self.discount:.2%})>'

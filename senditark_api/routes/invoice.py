@@ -4,7 +4,7 @@ from flask import (
 )
 
 from senditark_api.routes.helpers import get_db_conn
-from senditark_api.utils.query_aid import SenditarkQueries
+from senditark_api.utils.query import SenditarkQueries
 
 bp_invc = Blueprint('invoice', __name__, url_prefix='/invoice')
 

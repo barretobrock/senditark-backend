@@ -7,7 +7,11 @@ from .base import (
     Base,
     Currency,
 )
-from .budget import TableBudget
+from .budget import (
+    BudgetFrequency,
+    TableBudget,
+    TableBudgetItem,
+)
 from .invoice import (
     TableInvoice,
     TableInvoiceSplit,

@@ -13,7 +13,7 @@ from sqlalchemy.ext.declarative import (
 )
 
 
-class Currency(enum.Enum):
+class Currency(enum.IntEnum):
     EUR = enum.auto()
     USD = enum.auto()
 

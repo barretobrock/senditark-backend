@@ -1,4 +1,5 @@
 from collections import deque
+from dataclasses import dataclass
 import datetime
 import enum
 from typing import (
@@ -22,7 +23,7 @@ from .base import (
 )
 
 
-class AccountType(enum.Enum):
+class AccountType(enum.IntEnum):
     ASSET = enum.auto()
     EQUITY = enum.auto()
     EXPENSE = enum.auto()
@@ -30,28 +31,37 @@ class AccountType(enum.Enum):
     LIABILITY = enum.auto()
 
 
+@dataclass
 class TableAccount(Base):
-    """ParentAccount table"""
-    account_id = Column(Integer, primary_key=True, autoincrement=True)
-    parent_account_key = Column(Integer)
-    name = Column(VARCHAR, nullable=False)
-    full_name = Column(VARCHAR, nullable=False, unique=True)
-    desc = Column(VARCHAR)
-    level = Column(Integer, default=0, nullable=False)
-    account_type = Column(Enum(AccountType), nullable=False)
-    account_currency = Column(Enum(Currency), default=Currency.USD, nullable=False)
-    last_reconciled = Column(Date)
-    is_hidden = Column(Boolean, default=False, nullable=False)
-    is_active = Column(Boolean, default=True, nullable=False)
+    """Account table
+
+    Notes:
+        Type hinting here is to help make the attributes JSON serializable. Leaving out a type hint
+            means the attribute won't be serialized in the JSON response.
+            Some relationship attributes are thus ignored to either avoid unnecessary amounts of data or
+            to avoid recursion issues.
+
+    """
+    account_id: int = Column(Integer, primary_key=True, autoincrement=True)
+    parent_account_key: int = Column(Integer)
+    name: str = Column(VARCHAR, nullable=False)
+    full_name: str = Column(VARCHAR, nullable=False, unique=True)
+    description: str = Column(VARCHAR)
+    level: int = Column(Integer, default=0, nullable=False)
+    account_type: AccountType = Column(Enum(AccountType), nullable=False)
+    account_currency: Currency = Column(Enum(Currency), default=Currency.USD, nullable=False)
+    last_reconciled: datetime.date = Column(Date)
+    is_hidden: bool = Column(Boolean, default=False, nullable=False)
+    is_active: bool = Column(Boolean, default=True, nullable=False)
     daily_balances = relationship('TableBalance', back_populates='account')
-    budgets = relationship('TableBudget', back_populates='account')
+    budget_items = relationship('TableBudgetItem', back_populates='account')
 
     def __init__(self, name: str, account_type: AccountType,
                  account_currency: Currency = Currency.USD, parent_account: 'TableAccount' = None,
-                 is_hidden: bool = False, is_active: bool = True, desc: str = None,
+                 is_hidden: bool = False, is_active: bool = True, description: str = None,
                  last_reconciled: datetime.date = None):
         self.name = name.upper()
-        self.desc = desc
+        self.description = description
         self.parent_account = parent_account
         self.account_type = account_type
         self.account_currency = account_currency
