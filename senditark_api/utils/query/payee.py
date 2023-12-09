@@ -21,8 +21,10 @@ class PayeeQueries(BaseQueryHelper):
         return cls._add_obj(session=session, obj_class=TablePayee, data=data)
 
     @classmethod
-    def get_payee(cls, session: Session, payee_id: int) -> Optional[TablePayee]:
-        return cls._get_obj(session=session, obj_class=TablePayee, filters=[TablePayee.payee_id == payee_id])
+    def get_payee(cls, session: Session, payee_id: int = None, filters: FilterListType = None) -> Optional[TablePayee]:
+        if filters is None:
+            filters = [TablePayee.payee_id == payee_id]
+        return cls._get_obj(session=session, obj_class=TablePayee, filters=filters)
 
     @classmethod
     def get_payees(cls, session: Session, filters: FilterListType = None, limit: int = 100) -> List[TablePayee]:

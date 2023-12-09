@@ -21,12 +21,14 @@ from senditark_api.utils.query.base import (
 class InvoiceQueries(BaseQueryHelper):
 
     @classmethod
-    def add_invoice(cls, session: Session, data: ModelDictType) -> TableInvoice:
-        return cls._add_obj(session=session, obj_class=TableInvoice, data=data)
+    def add_invoice(cls, session: Session, obj: TableInvoice) -> TableInvoice:
+        return cls._add_obj(session=session, obj_class=TableInvoice, obj=obj)
 
     @classmethod
-    def get_invoice(cls, session: Session, invoice_id: int) -> TableInvoice:
-        return cls._get_obj(session=session, obj_class=TableInvoice, filters=[TableInvoice.invoice_id == invoice_id])
+    def get_invoice(cls, session: Session, invoice_id: int = None, filters: FilterListType = None) -> TableInvoice:
+        if filters is None:
+            filters = [TableInvoice.invoice_id == invoice_id]
+        return cls._get_obj(session=session, obj_class=TableInvoice, filters=filters)
 
     @classmethod
     def get_invoices(cls, session: Session, limit: int = 100, filters: FilterListType = None) -> List[TableInvoice]:
@@ -40,6 +42,15 @@ class InvoiceQueries(BaseQueryHelper):
             raise ValueError(f'Failed to find invoice with id: {invoice_id}')
         # TODO: Splits?
         cls._edit_obj(session=session, obj=invoice, data=data)
+
+    @classmethod
+    def delete_invoice(cls, session: Session, invoice_id: int):
+        cls.log.info(f'Handling DELETE for INVOICE ({invoice_id})')
+
+        invoice = cls.get_invoice(session=session, invoice_id=invoice_id)
+
+        session.delete(invoice)
+        session.commit()
 
     @classmethod
     def get_invoice_data(cls, session: Session, invoice_id: int, invoice_obj: TableInvoice = None) -> Dict:
@@ -57,9 +68,11 @@ class InvoiceQueries(BaseQueryHelper):
         }
 
     @classmethod
-    def get_invoice_split(cls, session: Session, invoice_split_id: int) -> Optional[TableInvoiceSplit]:
-        return cls._get_obj(session=session, obj_class=TableInvoiceSplit,
-                            filters=[TableInvoiceSplit.invoice_split_id == invoice_split_id])
+    def get_invoice_split(cls, session: Session, invoice_split_id: int = None,
+                          filters: FilterListType = None) -> Optional[TableInvoiceSplit]:
+        if filters is None:
+            filters = [TableInvoiceSplit.invoice_split_id == invoice_split_id]
+        return cls._get_obj(session=session, obj_class=TableInvoiceSplit, filters=filters)
 
     @classmethod
     def get_invoice_splits(cls, session: Session, filters=FilterListType, limit: int = None) -> List[TableInvoiceSplit]:
@@ -71,6 +84,15 @@ class InvoiceQueries(BaseQueryHelper):
         if invoice_split is None:
             raise ValueError(f'Failed to find invoice_split with id: {invoice_split_id}')
         cls._edit_obj(session=session, obj=invoice_split, data=data)
+
+    @classmethod
+    def delete_invoice_split(cls, session: Session, invoice_split_id: int):
+        cls.log.info(f'Handling DELETE for INVOICE_SPLIT ({invoice_split_id})')
+
+        invoice_split = cls.get_invoice_split(session=session, invoice_split_id=invoice_split_id)
+
+        session.delete(invoice_split)
+        session.commit()
 
     @classmethod
     def get_invoice_split_data(cls, session: Session, invoice_id: int = None, invoice_split_id: int = None,

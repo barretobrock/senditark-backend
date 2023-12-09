@@ -1,3 +1,4 @@
+import datetime
 from typing import (
     Dict,
     List,
@@ -21,7 +22,7 @@ log = get_logger()
 
 ModelDictType = Dict[
     Union[InstrumentedAttribute, str],
-    Union[str, int, List[str], List[int]]
+    Union[str, int, List[str], List[int], datetime.date, datetime.datetime]
 ]
 FilterListType = List[Union[BinaryExpression, bool]]
 
@@ -30,16 +31,21 @@ class BaseQueryHelper:
     log = log
 
     @classmethod
-    def _add_obj(cls, session: Session, obj_class: Type[DeclarativeMeta], data: ModelDictType):
-        cleaned_dict = {}
-        # Iterate through the dict and determine whether a key needs to be converted to string
-        for k, v in data.items():
-            if isinstance(k, InstrumentedAttribute):
-                cleaned_dict[k.name] = v
-            else:
-                cleaned_dict[k] = v
+    def _add_obj(cls, session: Session, obj_class: Type[DeclarativeMeta], data: ModelDictType = None,
+                 obj: DeclarativeMeta = None):
+        if data is not None:
+            cleaned_dict = {}
+            # Iterate through the dict and determine whether a key needs to be converted to string
+            for k, v in data.items():
+                if isinstance(k, InstrumentedAttribute):
+                    cleaned_dict[k.name] = v
+                else:
+                    cleaned_dict[k] = v
 
-        obj = obj_class(**cleaned_dict)
+            obj = obj_class(**cleaned_dict)
+        elif obj is None:
+            raise ValueError(f'Cannot create and add object of class {obj_class}. '
+                             f'Parameters data or obj must not be empty')
         session.add(obj)
         session.commit()
         return obj
@@ -70,6 +76,7 @@ class BaseQueryHelper:
         for k, v in data.items():
             setattr(obj, k.name, v)
         session.commit()
+        return obj
 
     @classmethod
     def _build_filters(cls, filter_mapping: Dict) -> List:

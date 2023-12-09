@@ -28,16 +28,18 @@ from senditark_api.utils.query.base import (
 class TransactionQueries(BaseQueryHelper):
 
     @classmethod
-    def add_transaction(cls, session: Session, data: ModelDictType) -> TableTransaction:
-        return cls._add_obj(session=session, obj_class=TableTransaction, data=data)
+    def add_transaction(cls, session: Session, obj: TableTransaction) -> TableTransaction:
+        return cls._add_obj(session=session, obj_class=TableTransaction, obj=obj)
 
     @classmethod
-    def get_transaction(cls, session: Session, transaction_id: int) -> TableTransaction:
-        return cls._get_obj(session=session, obj_class=TableTransaction,
-                            filters=[TableTransaction.transaction_id == transaction_id])
+    def get_transaction(cls, session: Session, transaction_id: int = None,
+                        filters: FilterListType = None) -> TableTransaction:
+        if filters is None:
+            filters = [TableTransaction.transaction_id == transaction_id]
+        return cls._get_obj(session=session, obj_class=TableTransaction, filters=filters)
 
     @classmethod
-    def get_transactions(cls, session: Session, filters: FilterListType, limit: int = 100) -> List[TableTransaction]:
+    def get_transactions(cls, session: Session, filters: FilterListType = None, limit: int = 100) -> List[TableTransaction]:
         return cls._get_objs(session=session, obj_class=TableTransaction, filters=filters, limit=limit)
 
     @classmethod
@@ -245,6 +247,28 @@ class TransactionQueries(BaseQueryHelper):
             running_balance += transaction_total
 
         return formatted_transactions
+
+    @classmethod
+    def add_transaction_split(cls, session: Session, data: ModelDictType) -> TableTransactionSplit:
+        return cls._add_obj(session=session, obj_class=TableTransactionSplit, data=data)
+
+    @classmethod
+    def get_transaction_split(cls, session: Session, transaction_split_id: int = None,
+                              filters: FilterListType = None) -> TableTransactionSplit:
+        if filters is None:
+            filters = [TableTransactionSplit.transaction_split_id == transaction_split_id]
+        return cls._get_obj(session=session, obj_class=TableTransactionSplit, filters=filters)
+
+    @classmethod
+    def get_transaction_splits(cls, session: Session, filters: FilterListType = None,
+                               limit: int = 100) -> List[TableTransactionSplit]:
+        return cls._get_objs(session=session, obj_class=TableTransactionSplit, filters=filters, limit=limit)
+
+    @classmethod
+    def edit_transaction_split(cls, session: Session, transaction_split_id: int, data: ModelDictType):
+        transaction_split_obj = cls.get_transaction_split(session=session, transaction_split_id=transaction_split_id)
+
+        cls._edit_obj(session=session, obj=transaction_split_obj, data=data)
 
 
 if __name__ == '__main__':

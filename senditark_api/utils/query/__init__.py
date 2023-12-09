@@ -1,5 +1,6 @@
 
 from senditark_api.utils.query.account import AccountQueries
+from senditark_api.utils.query.balance import BalanceQueries
 from senditark_api.utils.query.budget import BudgetQueries
 from senditark_api.utils.query.invoice import InvoiceQueries
 from senditark_api.utils.query.payee import PayeeQueries
@@ -9,6 +10,7 @@ from senditark_api.utils.query.transaction import TransactionQueries
 
 class SenditarkQueries(
         AccountQueries,
+        BalanceQueries,
         BudgetQueries,
         InvoiceQueries,
         PayeeQueries,

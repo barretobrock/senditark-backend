@@ -20,8 +20,10 @@ class TagQueries(BaseQueryHelper):
         return cls._add_obj(session=session, obj_class=TableTag, data=data)
 
     @classmethod
-    def get_tag(cls, session: Session, tag_id: int) -> TableTag:
-        return cls._get_obj(session=session, obj_class=TableTag, filters=[TableTag.tag_id == tag_id])
+    def get_tag(cls, session: Session, tag_id: int = None, filters: FilterListType = None) -> TableTag:
+        if filters is None:
+            filters = [TableTag.tag_id == tag_id]
+        return cls._get_obj(session=session, obj_class=TableTag, filters=filters)
 
     @classmethod
     def get_tags(cls, session: Session, filters: FilterListType = None, limit: int = 100) -> List[TableTag]:

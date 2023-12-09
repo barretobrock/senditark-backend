@@ -6,11 +6,7 @@ from typing import (
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import asc
 
-from senditark_api.model import (
-    TableAccount,
-    TableTransaction,
-    TableTransactionSplit,
-)
+from senditark_api.model import TableAccount
 from senditark_api.utils.query.base import (
     BaseQueryHelper,
     FilterListType,
@@ -22,22 +18,25 @@ class AccountQueries(BaseQueryHelper):
 
     @classmethod
     def add_account(cls, session: Session, data: ModelDictType):
-        cls._add_obj(session=session, obj_class=TableAccount, data=data)
+        return cls._add_obj(session=session, obj_class=TableAccount, data=data)
 
     @classmethod
-    def get_account(cls, session: Session, account_id: int) -> TableAccount:
-        return cls._get_obj(session=session, obj_class=TableAccount, filters=[TableAccount.account_id == account_id])
+    def get_account(cls, session: Session, account_id: int = None, filters: FilterListType = None) -> TableAccount:
+        if filters is None:
+            filters = [TableAccount.account_id == account_id]
+        return cls._get_obj(session=session, obj_class=TableAccount, filters=filters)
 
     @classmethod
     def get_accounts(cls, session: Session, filters: FilterListType = None, limit: int = None) -> List[TableAccount]:
-        return cls._get_objs(session=session, obj_class=TableAccount, filters=filters, limit=limit)
+        return cls._get_objs(session=session, obj_class=TableAccount, filters=filters, limit=limit,
+                             order_by=asc(TableAccount.full_name))
 
     @classmethod
     def edit_account(cls, session: Session, account_id: int, data: ModelDictType):
         account = cls.get_account(session=session, account_id=account_id)
         if account is None:
             raise ValueError(f'Failed to find account with id: {account_id}')
-        cls._edit_obj(session=session, obj=account, data=data)
+        return cls._edit_obj(session=session, obj=account, data=data)
 
     @classmethod
     def get_account_data(cls, session: Session, account_id: int, account_obj: TableAccount = None) -> Dict:
@@ -63,14 +62,3 @@ class AccountQueries(BaseQueryHelper):
         account = cls.get_account(session=session, account_id=account_id)
         session.delete(account)
         session.commit()
-
-    @classmethod
-    def get_account_reconciliation_info(cls, session: Session, account_id: int):
-        # TODO: This might be served best in Transactions
-        account = cls.get_account(session=session, account_id=account_id)
-
-        transaction_splits = session.query(TableTransactionSplit).join(
-            TableAccount, TableTransactionSplit.account_key == account_id).join(
-            TableTransaction, TableTransactionSplit.transaction_key == TableTransaction.transaction_id).order_by(
-            asc(TableTransaction.transaction_date)).all()
-        return {'account': account, 'splits': transaction_splits}

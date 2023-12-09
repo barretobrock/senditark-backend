@@ -16,12 +16,14 @@ from senditark_api.utils.query.base import (
 class BudgetQueries(BaseQueryHelper):
 
     @classmethod
-    def add_budget(cls, session: Session, data: ModelDictType) -> TableBudget:
-        return cls._add_obj(session=session, obj_class=TableBudget, data=data)
+    def add_budget(cls, session: Session, obj: TableBudget) -> TableBudget:
+        return cls._add_obj(session=session, obj_class=TableBudget, obj=obj)
 
     @classmethod
-    def get_budget(cls, session: Session, budget_id: int) -> TableBudget:
-        return cls._get_obj(session=session, obj_class=TableBudget, filters=[TableBudget.budget_id == budget_id])
+    def get_budget(cls, session: Session, budget_id: int = None, filters: FilterListType = None) -> TableBudget:
+        if filters is None:
+            filters = [TableBudget.budget_id == budget_id]
+        return cls._get_obj(session=session, obj_class=TableBudget, filters=filters)
 
     @classmethod
     def get_budgets(cls, session: Session, filters: FilterListType = None, limit: int = 100) -> List[TableBudget]:
