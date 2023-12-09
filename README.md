@@ -37,3 +37,29 @@ A Flack API backend for senditark.
    ```postgresql
    ALTER DATABASE <db> OWNER TO <user>;
    ```
+
+## Running
+For this instance, we'll try dockerizing, as locally I'm using a nginx proxy manager instance.
+
+### Example docker file
+[Source](https://github.com/wemake-services/wemake-django-template/blob/master/%7B%7Bcookiecutter.project_name%7D%7D/docker/django/Dockerfile)
+```dockerfile
+FROM python:3.11-alpine
+
+ENV PYTHONBUFFERED=1 \
+    POETRY_VERSION=1.7.0
+
+# System deps
+RUN pip install "poetry==$POETRY_VERSION"
+
+# Copy only requirements to cache them in docker layer
+WORKDIR /code
+COPY poetry.lock pyproject.toml /code/
+
+# Project utilization
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-interation --no-ansi
+
+# Creating folders and files for project
+COPY . /code
+```
