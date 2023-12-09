@@ -14,20 +14,30 @@ from werkzeug.http import HTTP_STATUS_CODES
 from senditark_api.config import DevelopmentConfig
 from senditark_api.flask_base import db
 from senditark_api.routes.account import bp_acct
+from senditark_api.routes.budget import bp_budg
 from senditark_api.routes.cron import bp_cron
 from senditark_api.routes.helpers import (
     get_app_logger,
     log_after,
     log_before,
 )
-from senditark_api.routes.invoices import bp_invc
+from senditark_api.routes.invoice import bp_invc
 from senditark_api.routes.main import bp_main
+from senditark_api.routes.payee import bp_payee
+from senditark_api.routes.scheduled_transactions import bp_schtrans
+from senditark_api.routes.tags import bp_tag
+from senditark_api.routes.transactions import bp_trans
 
 ROUTES = [
     bp_acct,
+    bp_budg,
     bp_cron,
     bp_invc,
-    bp_main
+    bp_main,
+    bp_payee,
+    bp_schtrans,
+    bp_tag,
+    bp_trans
 ]
 
 
@@ -43,6 +53,13 @@ def handle_err(err):
     if not getattr(err, 'message', None):
         return jsonify({'message': 'Server has encountered an error.'}), 500
     return jsonify(**err.kwargs), err.http_status_code
+
+
+def set_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS, PUT, DELETE"
+    return response
 
 
 def create_app(*args, **kwargs) -> Flask:
@@ -82,5 +99,6 @@ def create_app(*args, **kwargs) -> Flask:
 
     app.before_request(log_before)
     app.after_request(log_after)
+    app.after_request(set_headers)
 
     return app

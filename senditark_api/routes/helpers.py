@@ -12,6 +12,10 @@ def get_db_conn():
     return current_app.config['db']
 
 
+def get_session():
+    return get_db_conn().session
+
+
 def get_app_logger() -> PukrLog:
     return current_app.extensions['logg']
 
