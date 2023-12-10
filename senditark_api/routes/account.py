@@ -11,7 +11,15 @@ bp_acct = Blueprint('account', __name__, url_prefix='/account')
 
 
 @bp_acct.route('/all', methods=['GET'])
+def get_all_accounts_with_balances():
+    """This is used when displaying accounts"""
+    accounts_with_balances = Query.get_accounts_with_balance(get_session())
+    return jsonify(accounts_with_balances), 200
+
+
+@bp_acct.route('/list', methods=['GET'])
 def get_all_accounts():
+    """This is used when you just need a list of names e.g., for a datalist"""
     accounts = Query.get_accounts(get_session())
     return jsonify(accounts), 200
 
